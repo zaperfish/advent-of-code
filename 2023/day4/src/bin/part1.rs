@@ -1,24 +1,18 @@
-use zf_cc_utils::StrParseExt;
+use zf_cc_utils::*;
 
 fn main() {
-    let lines = include_str!("../../input.txt").lines();
+    let mut sum = 0;
 
-    let mut copies: Vec<i32> = vec![1; lines.clone().count()];
-    for (i, line) in lines.enumerate() {
-        let (left, right) = line.split_once("|").unwrap();
-        let (_, num_left) = left.split_once(":").unwrap();
-        let nums_left = num_left.ints();
-        let nums_right = right.ints();
-        let mut matches = 0;
-        for num in nums_left {
-            if nums_right.contains(&num) {
-                matches += 1;
-            }
+    for line in include_str!("../../input.txt").lines() {
+        let (wins, my) = line.split(":").nth(1).unwrap().split_once("|").unwrap();
+        let matches = wins
+            .ints()
+            .iter()
+            .fold(0, |acc, n| acc + my.ints().contains(n) as u32);
+        if matches > 0 {
+            sum += 2u32.pow(matches - 1);
         }
-        for j in 0..matches {
-            copies[i + 1 + j] += copies[i];
-        }
-        dbg!(copies.clone());
     }
-    println!("{}", copies.iter().sum::<i32>());
+
+    println!("{}", sum);
 }
